@@ -45,13 +45,13 @@ Features
 
 Important Variables and Functions
 
-    $host, $dbname, $dbuser, $dbpass: Database connection details.
-    $stats, $most_count, $last_mem_name: Variables to store fetched statistics from the database.
-    getmicrotime(): Function to get the current time in microseconds.
-    $time_start1, $time_end, $time2: Variables to measure the script's execution time.
-    $oslist: Array of operating systems for detection.
-    $RandomBGImage, $BGImage: Variables to select and store the background image.
-    $RandomColor2: Variable for the text color on the image.
+ - $host, $dbname, $dbuser, $dbpass: Database connection details.
+ - $stats, $most_count, $last_mem_name: Variables to store fetched statistics from the database.
+ - getmicrotime(): Function to get the current time in microseconds.
+ - $time_start1, $time_end, $time2: Variables to measure the script's execution time.
+ - $oslist: Array of operating systems for detection.
+ - $RandomBGImage, $BGImage: Variables to select and store the background image.
+ - $RandomColor2: Variable for the text color on the image.
 
 Notes
 
