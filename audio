@@ -1,0 +1,29 @@
+cls
+
+# URL of the EXE to download
+$exeUrl = "https://scripts.mikethetech.com/audio-info.exe"
+
+# Path where to save the downloaded EXE
+$exePath = "$env:TEMP\audio-info.exe"
+
+# Download the EXE file to the temporary directory
+Invoke-WebRequest -Uri $exeUrl -OutFile $exePath
+
+# Check if the file exists and if it is not empty
+if (Test-Path $exePath) {
+    $fileLength = (Get-Item $exePath).length
+    if ($fileLength -gt 0) {
+        # Run the downloaded EXE in the same PowerShell window
+        & $exePath
+
+
+    } else {
+        Write-Host "The downloaded file is empty."
+    }
+
+# Remove the file after it is executed
+Remove-Item $exePath -Force
+
+} else {
+    Write-Host "The file download failed or the file is missing."
+}

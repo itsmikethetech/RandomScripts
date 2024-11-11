@@ -1,0 +1,50 @@
+cls
+$Host.UI.RawUI.WindowTitle = "GPU Friendly Names" 
+Write-Host "Virtual Display Driver GPU 'Friendly Name' Finder`n"
+
+function Bytes2String {
+    param([int64]$Bytes)
+    if ($Bytes -lt 1024) { return "$Bytes bytes" }
+    $Bytes = [math]::round($Bytes / 1024, 2)
+    if ($Bytes -lt 1024) { return "$Bytes KB" }
+    $Bytes = [math]::round($Bytes / 1024, 2)
+    if ($Bytes -lt 1024) { return "$Bytes MB" }
+    $Bytes = [math]::round($Bytes / 1024, 2)
+    if ($Bytes -lt 1024) { return "$Bytes GB" }
+    $Bytes = [math]::round($Bytes / 1024, 2)
+    return "$Bytes TB"
+}
+
+try {
+    if ($IsLinux) {
+        # Linux GPU detection code (to be implemented)
+    } else {
+        $Details = Get-WmiObject Win32_VideoController
+        if ($Details) {
+            foreach ($GPU in $Details) {
+                $Model = $GPU.Caption
+                $RAMSize = $GPU.AdapterRAM
+                if ($RAMSize -is [array]) {
+                    $RAMSize = $RAMSize[0]
+                }
+
+                # Only display GPUs with RAM size greater than 0
+                if ($RAMSize -gt 0) {
+                    $ResWidth = $GPU.CurrentHorizontalResolution
+                    $ResHeight = $GPU.CurrentVerticalResolution
+                    $BitsPerPixel = $GPU.CurrentBitsPerPixel
+                    $RefreshRate = $GPU.CurrentRefreshRate
+                    $DriverVersion = $GPU.DriverVersion
+                    $Status = $GPU.Status
+                
+                    Write-Host "Friendly Name: $Model"
+                    Write-Host "($(Bytes2String $RAMSize) RAM, $ResWidth x $ResHeight pixels, $BitsPerPixel-bit, $RefreshRate Hz, driver $DriverVersion) - status $Status`n"
+                }
+            }
+        } else {
+            Write-Host "No GPU information found."
+        }
+    }
+} catch {
+    Write-Host "⚠️ Error in line $($_.InvocationInfo.ScriptLineNumber): $($_.Exception.Message)"
+}

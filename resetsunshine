@@ -1,0 +1,43 @@
+cls
+
+# Function to check if the script is running as administrator
+function Test-Admin {
+    $identity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = New-Object System.Security.Principal.WindowsPrincipal($identity)
+    return $principal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
+}
+
+# Check if the script is running with admin privileges
+if (-not (Test-Admin)) {
+    Write-Host "You need to run this script as an Administrator." -ForegroundColor Red
+    pause
+    exit
+}
+
+# Get the Program Files directory (handles both 32-bit and 64-bit installations)
+$programFiles = [System.Environment]::GetFolderPath('ProgramFiles')
+
+# Set the path to where Sunshine is installed (assuming it is in Program Files)
+$sunshinePath = Join-Path $programFiles "Sunshine\sunshine.exe"  # Modify this if necessary
+
+# Prompt the user for the new username and password
+$username = Read-Host "Enter the new username"
+$password = Read-Host "Enter the new password" -AsSecureString
+$passwordPlainText = [System.Net.NetworkCredential]::new("", $password).Password  # Convert to plain text
+
+# Change the credentials by running sunshine.exe with the --creds argument
+Start-Process -FilePath $sunshinePath -ArgumentList "--creds $username $passwordPlainText" -Wait
+
+# Restart the Sunshine service
+$serviceName = "Sunshine Service"  # Replace with the actual service name if different
+
+# Stop the service if it's running
+Stop-Service -Name $serviceName -Force
+
+# Start the service again
+Start-Service -Name $serviceName
+
+Write-Host "Credentials changed and service restarted successfully."
+Write-Host "Your new username is: $username"
+Write-Host "Your new password is: $passwordPlainText"
+Write-Host "Don't forget to change your password!"
